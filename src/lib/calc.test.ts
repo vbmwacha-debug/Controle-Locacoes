@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calc, type CalcInput } from "./calc";
+import { calc, proximoAniversario, type CalcInput } from "./calc";
 import { addMeses } from "./datas";
 
 const HOJE = "2026-10-01";
@@ -106,6 +106,12 @@ describe("imóveis", () => {
     expect(r.proximoReajuste).toBe("2027-03-20");
     expect(r.avisarLocadorAte).toBe("2027-01-29");
     expect(r.statusLabel).toBe("Prazo OK");
+  });
+  it("reajuste: início futuro ou recente → 1 ano depois do início", () => {
+    expect(proximoAniversario("2026-10-25", HOJE)).toBe("2027-10-25");
+    expect(proximoAniversario("2026-03-20", HOJE)).toBe("2027-03-20");
+    expect(proximoAniversario("2024-12-01", HOJE)).toBe("2026-12-01");
+    expect(proximoAniversario("2024-02-29", HOJE)).toBe("2027-02-28");
   });
   it("Mobilizar → Em contratação", () => {
     expect(calc(imovel({ fase: "Mobilizar" }), HOJE).statusLabel).toBe("Em contratação");

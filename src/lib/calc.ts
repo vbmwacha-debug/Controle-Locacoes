@@ -131,13 +131,13 @@ export function addPeriodo(iso: ISO, n: number, u: Unidade): ISO {
   return addDias(addMeses(iso, inteiro), Math.round(frac * 30.4375));
 }
 
-/** Próximo aniversário da data de início, estritamente depois de hoje. */
+/** Próximo aniversário da data de início, depois de hoje e pelo menos 1 ano após o início. */
 export function proximoAniversario(inicio: ISO, hoje: ISO): ISO {
-  const [, m, d] = parts(inicio);
+  const [iy, m, d] = parts(inicio);
   const [hy] = parts(hoje);
-  const neste = toISO(hy, m, Math.min(d, diasNoMes(hy, m)));
-  if (neste > hoje) return neste;
-  return toISO(hy + 1, m, Math.min(d, diasNoMes(hy + 1, m)));
+  const em = (y: number) => toISO(y, m, Math.min(d, diasNoMes(y, m)));
+  const y = Math.max(hy, iy + 1);
+  return em(y) > hoje ? em(y) : em(y + 1);
 }
 const diasNoMes = (y: number, m: number) => new Date(Date.UTC(y, m, 0)).getUTCDate();
 

@@ -71,6 +71,8 @@ describe("loc_calcular igual ao calc.ts", () => {
     ["desmobilizar atrasado", { fase: "Desmobilizar" }, { previsao_saida: "2026-09-30" }],
     ["janela com aviso", {}, { previsao_saida: "2026-11-15" }],
     ["vencido tramitando", { fase: "Tramitando", termino_contrato: "2026-03-01" }, { data_chegada: "2024-03-01" }],
+    ["início futuro", { fase: "Mobilizar", termino_contrato: "2027-10-25" }, { data_chegada: "2026-10-25" }],
+    ["29 de fevereiro", { termino_contrato: "2028-02-29" }, { data_chegada: "2024-02-29" }],
   ];
   for (const [nome, im, o] of imoveis) {
     it(nome, async () => {

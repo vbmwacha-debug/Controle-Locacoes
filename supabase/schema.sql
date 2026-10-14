@@ -59,11 +59,11 @@ language sql immutable as $$
     + (extract(day from b) - extract(day from a)) / 30.4375)::numeric, 1)
 $$;
 
--- Próximo aniversário da data de início, depois de hoje.
+-- Próximo aniversário da data de início, depois de hoje e pelo menos 1 ano após o início.
 create or replace function loc_proximo_aniversario(p_inicio date, p_hoje date) returns date
 language plpgsql immutable as $$
 declare
-  anos int := (extract(year from p_hoje) - extract(year from p_inicio))::int;
+  anos int := greatest(1, (extract(year from p_hoje) - extract(year from p_inicio))::int);
   d date := (p_inicio + make_interval(years => anos))::date;
 begin
   if d <= p_hoje then

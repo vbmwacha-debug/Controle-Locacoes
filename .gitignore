@@ -7,3 +7,4 @@ dist
 *_para_importar.xlsx
 .vercel
 .DS_Store
+src/mock-dev.json
