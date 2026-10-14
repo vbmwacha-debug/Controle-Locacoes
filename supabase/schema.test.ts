@@ -182,6 +182,24 @@ describe("gravação pelas funções RPC", () => {
   });
 });
 
+describe("dados de exemplo", () => {
+  it("exemplos.sql cria todos os status e remover_exemplos.sql apaga só os exemplos", async () => {
+    const antesItens = (await one<{ n: number }>(`select count(*)::int n from loc_locacoes`)).n;
+    const antesHist = (await one<{ n: number }>(`select count(*)::int n from loc_historico`)).n;
+    await db.exec(readFileSync(new URL("./exemplos.sql", import.meta.url), "utf8"));
+    const st = (await db.query<{ status: string; n: number }>(
+      `select status, count(*)::int n from loc_locacoes_status where obra_nome like '%(exemplo)' group by status`)).rows;
+    expect(st.map((r) => r.status).sort()).toEqual(
+      ["aditamento", "aditar", "atencao", "atrasada", "contratacao", "encerrado", "ok", "prever", "programar", "vencido"]);
+    await expect(db.exec(readFileSync(new URL("./exemplos.sql", import.meta.url), "utf8"))).rejects.toThrow(/já existem/);
+    await db.exec(readFileSync(new URL("./remover_exemplos.sql", import.meta.url), "utf8"));
+    expect((await one<{ n: number }>(`select count(*)::int n from loc_locacoes`)).n).toBe(antesItens);
+    expect((await one<{ n: number }>(`select count(*)::int n from loc_historico`)).n).toBe(antesHist);
+    // a trava do histórico voltou
+    await expect(db.query(`delete from loc_historico`)).rejects.toThrow(/não pode ser alterado/);
+  });
+});
+
 describe("segurança", () => {
   it("anon lê, mas não escreve direto nas tabelas", async () => {
     await db.exec(`set role anon`);
