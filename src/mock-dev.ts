@@ -2,7 +2,10 @@
 // gerado por "node scripts/gerar-mock.mjs") e bloqueia qualquer gravação.
 // Ativado no console do navegador com sessionStorage.loc_mock = "1".
 export async function instalarMock() {
-  const dados = (await import("./mock-dev.json")).default as unknown as Record<string, unknown[]>;
+  // import.meta.glob não falha se o arquivo não existir (ele não vai para o GitHub)
+  const arquivo = Object.values(import.meta.glob("./mock-dev.json", { import: "default" }))[0];
+  if (!arquivo) throw new Error("Rode antes: node scripts/gerar-mock.mjs");
+  const dados = (await arquivo()) as Record<string, unknown[]>;
   const original = window.fetch.bind(window);
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
